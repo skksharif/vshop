@@ -1,0 +1,1038 @@
+openapi: 3.0.3
+info:
+  title: Admin API
+  description: API for admin operations including user management, product/category creation, and order management
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://ecommerce-backend-z4c1.onrender.com/api/v1
+    description: Production Server
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Authentication Routes - Only Login and Register
+  /user/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account with email verification
+      security: [] # No authentication required for registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - userName
+                - email
+                - password
+                - phoneNumber
+                - kycCard
+                - role
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the user
+                  example: "John Doe"
+                userName:
+                  type: string
+                  description: Unique username
+                  example: "johndoe123"
+                email:
+                  type: string
+                  format: email
+                  description: Email address
+                  example: "john@example.com"
+                password:
+                  type: string
+                  format: password
+                  description: Password (will be hashed)
+                  example: "SecurePassword123!"
+                phoneNumber:
+                  type: string
+                  description: Phone number
+                  example: "+1234567890"
+                kycCard:
+                  type: string
+                  description: KYC card number
+                  example: "KYC123456"
+                role:
+                  type: string
+                  enum: [USER, ADMIN]
+                  description: User role
+                  example: "USER"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User Created Successfully"
+        "400":
+          description: Bad request - missing fields, username/phone already taken, or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /user/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return access/refresh tokens
+      security: [] # No authentication required for login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                  example: "john@example.com"
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+                  example: "SecurePassword123!"
+      responses:
+        "200":
+          description: Login successful
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: HTTP-only cookies with access and refresh tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login successful"
+                  accessToken:
+                    type: string
+                    description: JWT access token (15 minutes)
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  refreshToken:
+                    type: string
+                    description: JWT refresh token (7 days)
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    $ref: "#/components/schemas/UserWithoutPassword"
+        "400":
+          description: Invalid password or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User not verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  # Admin Routes (existing)
+  /admin/unverified-users:
+    get:
+      tags:
+        - User Management
+      summary: Get unverified users
+      description: Retrieve all users who haven't completed KYC verification
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully retrieved unverified users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/verifyUser:
+    patch:
+      tags:
+        - User Management
+      summary: Verify user KYC
+      description: Mark a user as KYC verified
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The ID of the user to verify
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+      responses:
+        "200":
+          description: User verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User verified successfully"
+                  user:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/create-category:
+    post:
+      tags:
+        - Category Management
+      summary: Create a new category
+      description: Create a new product category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - categoryName
+                - imageUrl
+              properties:
+                categoryName:
+                  type: string
+                  description: Name of the category
+                  example: "Electronics"
+                imageUrl:
+                  type: string
+                  description: URL of the category image
+                  example: "https://example.com/electronics.jpg"
+      responses:
+        "201":
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Category Created"
+                  category:
+                    $ref: "#/components/schemas/Category"
+        "400":
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Category already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/create-product:
+    post:
+      tags:
+        - Product Management
+      summary: Create a new product
+      description: Create a new product in a specific category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The ID of the category for this product
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productName
+                - price
+                - color
+                - sizes
+              properties:
+                productName:
+                  type: string
+                  description: Name of the product
+                  example: "Wireless Headphones"
+                description:
+                  type: string
+                  description: Product description
+                  example: "High-quality wireless headphones with noise cancellation"
+                price:
+                  type: number
+                  description: Product price
+                  example: 199.99
+                images:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of product image URLs
+                  example:
+                    [
+                      "https://example.com/image1.jpg",
+                      "https://example.com/image2.jpg",
+                    ]
+                color:
+                  type: string
+                  description: Product color
+                  example: "Black"
+                sizes:
+                  type: array
+                  items:
+                    type: string
+                  description: Available sizes
+                  example: ["S", "M", "L", "XL"]
+                isActive:
+                  type: boolean
+                  description: Whether the product is active
+                  default: true
+                  example: true
+      responses:
+        "200":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Product Created"
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "400":
+          description: Missing required fields or invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/orders/pending:
+    get:
+      tags:
+        - Order Management
+      summary: Get pending orders
+      description: Retrieve all orders with pending status
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Pending orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Pending orders retrieved successfully"
+                  pendingOrders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OrderWithDetails"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /category/getCatergory:
+    get:
+      tags:
+        - Category Management
+      summary: Get all categories
+      description: Retrieve list of all available product categories
+      security: [] # Public endpoint
+      responses:
+        "200":
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Categories Fetched"
+                  categories:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Category"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /category/products-by-category:
+    get:
+      tags:
+        - Category Management
+      summary: Get products by category
+      description: Retrieve all products belonging to a specific category
+      security: [] # Public endpoint
+      parameters:
+        - name: categoryId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: ID of the category to fetch products from
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Products Retrieved"
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /category/getProduct:
+    get:
+      tags:
+        - Category Management
+      summary: Get product details
+      description: Retrieve details of a specific product
+      security: [] # Public endpoint
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: ID of the product to fetch
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+      responses:
+        "200":
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Product Retrieved"
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /admin/orders/approve:
+    post:
+      tags:
+        - Order Management
+      summary: Approve order
+      description: Approve one or more orders by changing their status
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+              properties:
+                orderId:
+                  type: string
+                  description: ID of the order to approve
+                  example: "64a7b8c9d1e2f3a4b5c6d7e8"
+                newStatus:
+                  type: string
+                  description: New status for the order
+                  default: "paid"
+                  example: "paid"
+      responses:
+        "201":
+          description: Orders approved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Orders approved successfully"
+                  updatedCount:
+                    type: integer
+                    example: 1
+        "400":
+          description: No order IDs provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/orders/shipped:
+    post:
+      tags:
+        - Order Management
+      summary: Mark order as shipped
+      description: Mark an order as shipped (only if currently paid)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+              properties:
+                orderId:
+                  type: string
+                  description: ID of the order to mark as shipped
+                  example: "64a7b8c9d1e2f3a4b5c6d7e8"
+      responses:
+        "201":
+          description: Order marked as shipped successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Order marked as shipped successfully"
+                  updatedCount:
+                    type: integer
+                    example: 1
+        "400":
+          description: orderId is required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No matching 'paid' order found with this ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/set-credit-limit:
+    post:
+      tags:
+        - Credit Management
+      summary: Set user credit limit
+      description: Set the credit balance for a specific user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - creditBal
+              properties:
+                userId:
+                  type: string
+                  description: ID of the user
+                  example: "64a7b8c9d1e2f3a4b5c6d7e8"
+                creditBal:
+                  type: number
+                  description: New credit balance
+                  example: 1000.00
+      responses:
+        "201":
+          description: Credit limit updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Credit limit updated successfully."
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "64a7b8c9d1e2f3a4b5c6d7e8"
+                      fullName:
+                        type: string
+                        example: "John Doe"
+                      creditBal:
+                        type: number
+                        example: 1000.00
+        "400":
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /admin/update-credit-limit:
+    post:
+      tags:
+        - Credit Management
+      summary: Update user credit limit
+      description: Update the credit balance for a specific user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - newCredit
+              properties:
+                userId:
+                  type: string
+                  description: ID of the user
+                  example: "64a7b8c9d1e2f3a4b5c6d7e8"
+                newCredit:
+                  type: number
+                  description: New credit amount
+                  example: 1500.00
+      responses:
+        "201":
+          description: Credit limit updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Credit limit updated successfully"
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        fullName:
+          type: string
+          example: "John Doe"
+        userName:
+          type: string
+          example: "johndoe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+        creditBal:
+          type: number
+          example: 500.00
+        role:
+          type: string
+          enum: [USER, ADMIN]
+          example: "USER"
+        kycCard:
+          type: string
+          example: "ID123456"
+        kycVerified:
+          type: boolean
+          example: false
+        aadhaarPanUrl:
+          type: string
+          nullable: true
+          example: "https://example.com/kyc-doc.pdf"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+
+    UserWithoutPassword:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        fullName:
+          type: string
+          example: "John Doe"
+        userName:
+          type: string
+          example: "johndoe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+        creditBal:
+          type: number
+          example: 500.00
+        role:
+          type: string
+          enum: [USER, ADMIN]
+          example: "USER"
+        kycCard:
+          type: string
+          example: "ID123456"
+        kycVerified:
+          type: boolean
+          example: false
+        aadhaarPanUrl:
+          type: string
+          nullable: true
+          example: "https://example.com/kyc-doc.pdf"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        name:
+          type: string
+          example: "Electronics"
+        image:
+          type: string
+          example: "https://example.com/electronics.jpg"
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        name:
+          type: string
+          example: "Wireless Headphones"
+        description:
+          type: string
+          nullable: true
+          example: "High-quality wireless headphones"
+        price:
+          type: number
+          example: 199.99
+        images:
+          type: array
+          items:
+            type: string
+          example: ["https://example.com/image1.jpg"]
+        color:
+          type: string
+          example: "Black"
+        sizes:
+          type: array
+          items:
+            type: string
+          example: ["M", "L", "XL"]
+        isActive:
+          type: boolean
+          example: true
+        categoryId:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        category:
+          $ref: "#/components/schemas/Category"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        orderId:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        productId:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        variantId:
+          type: string
+          nullable: true
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        quantity:
+          type: integer
+          example: 2
+        price:
+          type: number
+          example: 199.99
+
+    OrderWithDetails:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        userId:
+          type: string
+          example: "64a7b8c9d1e2f3a4b5c6d7e8"
+        total:
+          type: number
+          example: 399.98
+        status:
+          type: string
+          example: "pending"
+        paymentOption:
+          type: string
+          enum: [FULL_PAYMENT, EMI_3_MONTH, EMI_6_MONTH]
+          example: "FULL_PAYMENT"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-01T10:00:00.000Z"
+        user:
+          $ref: "#/components/schemas/User"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message"
+        message:
+          type: string
+          example: "Detailed error description"
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    Forbidden:
+      description: Admin role required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+tags:
+  - name: Authentication
+    description: User authentication operations (login and registration)
+  - name: User Management
+    description: Operations related to user verification and management
+  - name: Category Management
+    description: Operations for managing product categories
+  - name: Product Management
+    description: Operations for managing products
+  - name: Order Management
+    description: Operations for managing orders and their status
+  - name: Credit Management
+    description: Operations for managing user credit limits
