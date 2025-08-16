@@ -1,66 +1,83 @@
-# vshops - Production-Ready E-commerce Frontend
+# Village Angel - Premium E-commerce Frontend
 
-A modern, mobile-first e-commerce frontend built with React, TypeScript, and Tailwind CSS.
+A modern, mobile-first e-commerce frontend built with React, TypeScript, and Tailwind CSS, featuring a distinctive red and gold theme.
 
-## 🚀 Features
+## 🏆 Key Features
 
-- **Mobile-first responsive design** with excellent UX across all devices
-- **Authentication system** with cookie + JWT token strategy
-- **Role-based access control** (USER/ADMIN)
-- **Product catalog** with categories, search, and filtering
-- **Shopping cart** with persistent storage
-- **Admin panel** for managing users, products, orders, and credits
-- **SEO optimized** with meta tags, structured data, and sitemap
-- **Accessibility compliant** with WCAG guidelines
-- **Performance optimized** with lazy loading and caching
+- **Robust Authentication System** with automatic token refresh every 14 minutes
+- **Persistent State Management** - no logout on page refresh
+- **Role-based Access Control** (USER/ADMIN)
+- **Mobile-first Responsive Design** with red and gold Village Angel branding
+- **Shopping Cart** with persistent storage
+- **Admin Panel** for managing users, products, orders, and credits
+- **SEO Optimized** with meta tags and structured data
+- **Performance Optimized** with lazy loading and caching
+
+## 🎨 Design Theme
+
+Village Angel features a premium red and gold color scheme:
+- **Primary Red**: #dc2626 (village-red-600)
+- **Primary Gold**: #fbbf24 (village-gold-400)
+- **Gradients**: Subtle red-to-gold gradients throughout the interface
+- **Typography**: Clean, modern fonts with proper hierarchy
+
+## 🔐 Authentication System
+
+### Automatic Token Refresh
+- Access tokens refresh automatically every 14 minutes
+- Seamless user experience with no interruptions
+- Fallback to logout if refresh fails
+
+### State Persistence
+- "Remember Me" option for persistent sessions
+- Proper state restoration on page refresh
+- Secure token storage with configurable persistence
+
+### Authentication Flow
+1. User logs in with email/password
+2. Server returns JWT access and refresh tokens
+3. Client stores tokens based on "Remember Me" preference
+4. Automatic refresh scheduled every 14 minutes
+5. On refresh failure, user is gracefully logged out
 
 ## 🛠️ Tech Stack
 
 - **Frontend Framework:** React 18 + TypeScript
 - **Build Tool:** Vite
-- **Styling:** Tailwind CSS
+- **Styling:** Tailwind CSS with custom Village Angel theme
 - **Routing:** React Router v6
-- **State Management:** Zustand
-- **HTTP Client:** Axios
-- **Forms:** React Hook Form + Zod
+- **State Management:** Zustand with persistence
+- **HTTP Client:** Axios with interceptors
+- **Forms:** React Hook Form + Zod validation
 - **Data Fetching:** TanStack React Query
 - **SEO:** React Helmet Async
 - **UI Components:** Custom components with Lucide React icons
-- **Notifications:** Sonner
+- **Notifications:** Sonner with custom theming
 
 ## 🌍 Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the client directory:
 
 ```env
 VITE_API_BASE_URL=https://ecommerce-backend-z4c1.onrender.com/api/v1
-VITE_SITE_URL=https://vshops.example
+VITE_SITE_URL=https://villageangel.example
 ```
 
 ## 📦 Installation
 
-1. Clone the repository:
+1. Navigate to the client directory:
 ```bash
-git clone <repository-url>
-cd vshops
+cd client
 ```
 
 2. Install dependencies:
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
 ```
 
 3. Start the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
 The application will be available at `http://localhost:5173`
@@ -84,96 +101,69 @@ src/
 └── App.tsx            # Main application component
 ```
 
-## 🔐 Authentication
+## 🔧 Key Components
 
-The app uses a hybrid authentication approach:
+### Authentication Store (`src/store/auth.ts`)
+- Manages user authentication state
+- Handles automatic token refresh
+- Provides persistent session management
+- Includes proper cleanup on logout
 
-- **HTTP-only cookies** for secure session management
-- **JWT tokens** stored in memory and localStorage (when "Remember me" is checked)
-- **Automatic token refresh** with fallback to logout on failure
-- **Role-based protection** for admin routes
+### Axios Configuration (`src/lib/axios.ts`)
+- Automatic token injection
+- Response interceptors for 401 handling
+- Automatic token refresh on expired tokens
+- Proper error handling and user feedback
 
-### Authentication Flow:
-1. User logs in with email/password
-2. Server returns JWT tokens and sets HTTP-only cookies
-3. Client stores access token based on "Remember me" preference
-4. All API requests include both cookie and Authorization header
-5. On token expiry, automatic refresh attempt
-6. On refresh failure, user is logged out
+### Protected Routes (`src/components/auth/ProtectedRoute.tsx`)
+- Role-based access control
+- Authentication verification
+- Graceful loading states
+- Proper redirects for unauthorized access
 
-## 🛍️ Core Features
+## 🎯 Authentication Best Practices
 
-### User Features:
-- Browse products by category
-- View detailed product information
-- Add items to shopping cart
-- User profile management
-- Responsive mobile design
+### Token Management
+- Access tokens stored in memory for security
+- Refresh tokens persisted based on user preference
+- Automatic cleanup on logout
+- Secure token refresh mechanism
 
-### Admin Features:
-- User verification and KYC management
-- Category and product management
-- Order processing (approve/ship)
-- Credit limit management
-- Dashboard with quick stats
+### State Management
+- Proper initialization on app startup
+- No state loss on page refresh
+- Loading states during authentication checks
+- Error handling for failed authentication
 
-## 🎨 Design System
+### User Experience
+- Seamless token refresh (no user interruption)
+- Proper loading indicators
+- Clear error messages
+- Intuitive navigation based on user role
 
-- **Color System:** 6 color ramps (primary, secondary, accent, success, warning, error)
-- **Typography:** 3 font weights maximum, proper line spacing
-- **Spacing:** Consistent 8px spacing system
-- **Components:** Reusable, accessible components
-- **Mobile-first:** Responsive breakpoints for optimal viewing
+## 🚀 Performance Features
 
-## 🔍 SEO Features
-
-- **Meta tags** for all pages with dynamic content
-- **Open Graph** and Twitter Card support
-- **JSON-LD structured data** for products
-- **Canonical URLs** for all pages
-- **Sitemap.xml** and robots.txt
-- **Semantic HTML** with proper heading hierarchy
+- **Code Splitting** with lazy loading
+- **Optimized Images** with proper sizing
+- **Query Caching** with TanStack React Query
+- **Skeleton Loading** states
+- **Optimized Bundles** with Vite
 
 ## 📱 Mobile Experience
 
-- **Bottom navigation** for easy thumb access
+- **Bottom Navigation** for easy thumb access
 - **Touch-friendly** 44px minimum touch targets
-- **Pull-to-refresh** on product lists
-- **Mobile-optimized** image carousels and filters
-- **Responsive grid** layouts
+- **Responsive Grid** layouts
+- **Mobile-optimized** forms and interactions
 
-## 🚀 Performance
+## 🔍 SEO Features
 
-- **Code splitting** with lazy loading
-- **Image optimization** with proper sizing
-- **Query caching** with TanStack React Query
-- **Skeleton loading** states
-- **Optimized bundles** with Vite
+- **Dynamic Meta Tags** for all pages
+- **Open Graph** and Twitter Card support
+- **Canonical URLs** for all pages
+- **Semantic HTML** with proper heading hierarchy
 
-## 📊 API Integration
-
-The frontend integrates with the backend API using these exact endpoints:
-
-- `POST /user/register` - User registration
-- `POST /user/login` - User authentication
-- `GET /category/getCatergory` - Fetch categories
-- `GET /category/products-by-category` - Fetch products by category
-- `GET /category/getProduct` - Fetch single product
-- Admin endpoints for user verification, product management, orders, etc.
-
-## 🧪 Quality Assurance
-
-### Testing Checklist:
-- [ ] Authentication flows (login, logout, token refresh)
-- [ ] Role-based access control
-- [ ] Mobile responsiveness across devices
-- [ ] Shopping cart persistence
-- [ ] Admin panel functionality
-- [ ] SEO meta tags and structured data
-- [ ] Accessibility compliance
-- [ ] Performance metrics (Lighthouse scores)
-
-## 🔧 Development Scripts
+## 🧪 Development Scripts
 
 ```bash
 # Start development server
@@ -200,14 +190,18 @@ npm run build
 3. Configure environment variables for production
 4. Ensure proper CORS settings on the backend
 
-## 🤝 Contributing
+## 🔒 Security Features
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes following the coding standards
-4. Test thoroughly across devices
-5. Submit a pull request
+- **HTTP-only Cookies** support
+- **CSRF Protection** with proper headers
+- **Secure Token Storage** with configurable persistence
+- **Role-based Access Control**
+- **Automatic Session Management**
 
 ## 📄 License
 
 This project is licensed under the MIT License.
+
+---
+
+**Village Angel** - Your trusted partner for premium e-commerce experiences.
