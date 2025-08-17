@@ -22,8 +22,9 @@ api.interceptors.request.use(
     // Dynamically import to avoid circular dependency
     const getAuthState = () => {
       try {
-        const authStore = JSON.parse(localStorage.getItem('village-angel-auth') || '{}');
-        return authStore.state || {};
+        // Get current state from Zustand store
+        const { useAuthStore } = require('../store/auth');
+        return useAuthStore.getState();
       } catch {
         return {};
       }
@@ -34,12 +35,13 @@ api.interceptors.request.use(
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Village Angel: Added auth token to request');
     }
     
     return config;
   },
   (error) => {
-    console.error('Request interceptor error:', error);
+    console.error('Village Angel: Request interceptor error:', error);
     return Promise.reject(error);
   }
 );

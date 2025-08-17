@@ -28,6 +28,8 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
  */
 export const refreshAccessToken = async (): Promise<string | null> => {
   try {
+    console.log('Village Angel: Starting token refresh process...');
+    
     // Get refresh token from auth store
     const { useAuthStore } = await import('../store/auth');
     const refreshToken = useAuthStore.getState().refreshToken;
@@ -37,19 +39,21 @@ export const refreshAccessToken = async (): Promise<string | null> => {
       return null;
     }
 
+    console.log('Village Angel: Calling refresh endpoint...');
+    
     // Call refresh endpoint with refresh token in body
     const response = await api.post<{ accessToken: string }>('/user/refresh', {
       refreshToken
     });
     
-    console.log('Token refreshed successfully');
+    console.log('Village Angel: Token refreshed successfully');
     return response.data.accessToken;
   } catch (error: any) {
-    console.error('Token refresh failed:', error.response?.data?.message || error.message);
+    console.error('Village Angel: Token refresh failed:', error.response?.data?.message || error.message);
     
     // If refresh fails with 401, it means refresh token is invalid/expired
     if (error.response?.status === 401) {
-      console.log('Refresh token expired, user will be logged out');
+      console.log('Village Angel: Refresh token expired, user will be logged out');
     }
     
     return null;

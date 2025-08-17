@@ -51,7 +51,13 @@ function App() {
    */
   useEffect(() => {
     console.log('Village Angel: Initializing authentication...');
-    initializeAuth();
+    
+    // Add a small delay to ensure Zustand has rehydrated from localStorage
+    const timer = setTimeout(() => {
+      initializeAuth();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [initializeAuth]);
 
   // Show loading spinner while initializing auth

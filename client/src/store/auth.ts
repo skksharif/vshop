@@ -20,6 +20,7 @@ interface AuthState {
   clearRefreshTimer: () => void;
   setRefreshTimer: (timer: NodeJS.Timeout) => void;
   initializeAuth: () => void;
+  scheduleTokenRefresh: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -30,10 +31,12 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isAuth: false,
       rememberMe: false,
-      isLoading: false,
+      isLoading: true, // Start with loading true
       refreshTimer: null,
 
       login: (user, accessToken, refreshToken, rememberMe = false) => {
+        console.log('Village Angel: Logging in user:', user.fullName, 'Remember me:', rememberMe);
+        
         // Clear any existing refresh timer
         const currentTimer = get().refreshTimer;
         if (currentTimer) {
@@ -55,9 +58,13 @@ export const useAuthStore = create<AuthState>()(
         }, 14 * 60 * 1000); // 14 minutes
 
         set({ refreshTimer: timer });
+        
+        console.log('Village Angel: Login successful, tokens stored, refresh scheduled');
       },
 
       logout: () => {
+        console.log('Village Angel: Logging out user...');
+        
         // Clear refresh timer on logout
         const timer = get().refreshTimer;
         if (timer) {
@@ -73,6 +80,8 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
           refreshTimer: null,
         });
+        
+        console.log('Village Angel: Logout complete, all state cleared');
       },
 
       setUser: (user) => set({ user }),
@@ -96,10 +105,21 @@ export const useAuthStore = create<AuthState>()(
 
       // Initialize authentication state on app startup
       initializeAuth: () => {
+        console.log('Village Angel: Initializing authentication state...');
         const state = get();
         
-        // If user has valid tokens and rememberMe is true, restore session
-        if (state.accessToken && state.refreshToken && state.rememberMe) {
+        console.log('Village Angel: Current state:', {
+          hasAccessToken: !!state.accessToken,
+          hasRefreshToken: !!state.refreshToken,
+          rememberMe: state.rememberMe,
+          isAuth: state.isAuth,
+          hasUser: !!state.user
+        });
+        
+        // If user has valid tokens, restore session
+        if (state.accessToken && state.refreshToken && state.user) {
+          console.log('Village Angel: Restoring session for user:', state.user.fullName);
+          
           set({ 
             isAuth: true,
             isLoading: false 
@@ -111,23 +131,30 @@ export const useAuthStore = create<AuthState>()(
           }, 14 * 60 * 1000); // 14 minutes
           
           set({ refreshTimer: timer });
-        } else if (!state.rememberMe) {
-          // If rememberMe is false, clear tokens on app restart
+          
+          console.log('Village Angel: Session restored, refresh scheduled');
+        } else {
+          console.log('Village Angel: No valid session found, clearing state');
+          
+          // Clear any invalid state
           set({
             user: null,
             accessToken: null,
             refreshToken: null,
             isAuth: false,
             isLoading: false,
+            refreshTimer: null,
           });
         }
       },
 
       // Schedule automatic token refresh
       scheduleTokenRefresh: async () => {
+        console.log('Village Angel: Attempting token refresh...');
         const { refreshToken, logout } = get();
         
         if (!refreshToken) {
+          console.log('Village Angel: No refresh token available, logging out');
           logout();
           return;
         }
@@ -138,6 +165,7 @@ export const useAuthStore = create<AuthState>()(
           const newToken = await refreshAccessToken();
           
           if (newToken) {
+            console.log('Village Angel: Token refresh successful');
             set({ accessToken: newToken });
             
             // Schedule next refresh
@@ -147,6 +175,7 @@ export const useAuthStore = create<AuthState>()(
             
             set({ refreshTimer: timer });
           } else {
+            console.log('Village Angel: Token refresh failed, logging out');
             // Refresh failed, logout user
             logout();
           }
@@ -159,12 +188,24 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'village-angel-auth',
       partialize: (state) => ({
-        user: state.user,
+        user: state.rememberMe ? state.user : null,
         accessToken: state.rememberMe ? state.accessToken : null,
         refreshToken: state.rememberMe ? state.refreshToken : null,
         rememberMe: state.rememberMe,
-        isAuth: state.rememberMe ? state.isAuth : false,
+        isAuth: state.rememberMe && state.isAuth,
       }),
+      onRehydrateStorage: () => (state) => {
+        console.log('Village Angel: Rehydrating auth state from storage');
+        if (state) {
+          console.log('Village Angel: Rehydrated state:', {
+            hasUser: !!state.user,
+            hasAccessToken: !!state.accessToken,
+            hasRefreshToken: !!state.refreshToken,
+            rememberMe: state.rememberMe,
+            isAuth: state.isAuth
+          });
+        }
+      },
     }
   )
 );
