@@ -1,12 +1,14 @@
 // src/pages/Register.jsx
 import React, { useState, useEffect } from "react";
-import "./Register.css"; // Custom CSS
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { fetchWithToken } from "../../api/api";
+import "./Register.css";
 
 export default function Register() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "",
     userName: "",
@@ -14,29 +16,29 @@ export default function Register() {
     password: "",
     phoneNumber: "",
     kycCard: "",
-    role: "USER", // Fixed role
+    role: "USER", // fixed role
   });
 
-  //Redirect logged-in users away from Register
+  // ✅ Redirect logged-in users
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
     if (token && role) {
-      if (role === "ADMIN") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      navigate(role === "ADMIN" ? "/admin" : "/", { replace: true });
     }
   }, [navigate]);
 
+  // ✅ Handle input changes
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ✅ Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await fetchWithToken(`/user/register`, {
@@ -48,8 +50,10 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Registration successful!");
+        toast.success("✅ Registration successful!");
         navigate("/login");
+
+        // reset form
         setFormData({
           fullName: "",
           userName: "",
@@ -60,17 +64,19 @@ export default function Register() {
           role: "USER",
         });
       } else {
-        toast.error(data.message || "Registration failed!");
+        toast.error(data.message || "❌ Registration failed!");
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong!");
+    } catch (err) {
+      console.error(err);
+      toast.error("⚠️ Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="register-container">
-      <h2>Register</h2>
+      <h2>Create Account</h2>
       <form onSubmit={handleSubmit} className="register-form">
         <input
           type="text"
@@ -79,6 +85,7 @@ export default function Register() {
           value={formData.fullName}
           onChange={handleChange}
           required
+          disabled={loading}
         />
         <input
           type="text"
@@ -87,6 +94,7 @@ export default function Register() {
           value={formData.userName}
           onChange={handleChange}
           required
+          disabled={loading}
         />
         <input
           type="email"
@@ -95,6 +103,7 @@ export default function Register() {
           value={formData.email}
           onChange={handleChange}
           required
+          disabled={loading}
         />
         <input
           type="password"
@@ -103,6 +112,7 @@ export default function Register() {
           value={formData.password}
           onChange={handleChange}
           required
+          disabled={loading}
         />
         <input
           type="tel"
@@ -111,6 +121,7 @@ export default function Register() {
           value={formData.phoneNumber}
           onChange={handleChange}
           required
+          disabled={loading}
         />
         <input
           type="text"
@@ -119,8 +130,13 @@ export default function Register() {
           value={formData.kycCard}
           onChange={handleChange}
           required
+          disabled={loading}
         />
-        <button type="submit">Register</button>
+
+        {/* Submit button */}
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
       </form>
     </div>
   );

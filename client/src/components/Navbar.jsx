@@ -1,24 +1,35 @@
 // src/components/Navbar.jsx
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login"); // Redirect to login after logout
+    navigate("/login");
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <NavLink to="/" className="logo-title">VA</NavLink>
+        <NavLink to="/" className="logo-title">
+           <img className="logo" src="/logo.png" alt="logo" />
+        </NavLink>
       </div>
-      <ul className="navbar-list">
+
+      <button
+        className="mobile-menu-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        ☰
+      </button>
+
+      <ul className={`navbar-list ${menuOpen ? "mobile-open" : ""}`}>
         {token && role === "ADMIN" && (
           <li>
             <button className="navbar-link" onClick={handleLogout}>

@@ -1,162 +1,71 @@
-/* Village Angel Navbar Styles */
+/* Village Angel Thin Glossy Navbar */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  padding: 1rem 2rem;
-  background: var(--gradient-saffron);
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  box-shadow: var(--shadow-medium);
-  backdrop-filter: blur(10px);
-  transition: var(--transition);
-  min-height: 70px;
+  padding: 0.5rem 1.25rem; /* thinner padding */
+  background: linear-gradient(135deg, #3e0000, #510000);
+  border-bottom: 2px solid #ffd700;
+  min-height: 56px; /* thinner height */
 }
 
-.navbar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 153, 51, 0.95) 0%, rgba(255, 119, 34, 0.95) 100%);
-  z-index: -1;
+/* Logo */
+.logo{
+  width: 40px;
 }
 
-/* Logo Section */
-.navbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: var(--transition);
-}
-
-.navbar-logo:hover {
-  transform: scale(1.05);
-}
-
-.logo-title {
-  font-family: 'Merriweather', serif;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--white);
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-.logo-title::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--gold);
-  transition: width 0.3s ease;
-}
-
-.navbar-logo:hover .logo-title::after {
-  width: 100%;
-}
-
-/* Navigation Links */
+/* Nav List */
 .navbar-list {
   display: flex;
   list-style: none;
+  gap: 0.5rem;
   margin: 0;
   padding: 0;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 .navbar-list li {
-  position: relative;
+  display: flex;
 }
 
+/* Links */
 .navbar-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  color: var(--white);
-  font-size: 1rem;
+  padding: 0.4rem 0.9rem;
+  color: #ffffff;
+  font-size: 0.95rem;
   font-weight: 500;
   text-decoration: none;
-  border-radius: var(--border-radius);
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-  background: none;
+  border-radius: 6px;
+  background: transparent;
   border: none;
   cursor: pointer;
-  min-height: 44px; /* Touch target */
-}
-
-.navbar-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.navbar-link:hover::before {
-  left: 100%;
+  transition: all 0.3s ease;
 }
 
 .navbar-link:hover {
-  background: rgba(255, 215, 0, 0.2);
-  color: var(--gold);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
 }
 
 .navbar-link.active {
-  background: var(--gold);
-  color: var(--dark-text);
+  background: #ffd700;
+  color: #800000;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 
-.navbar-link.active:hover {
-  background: var(--gold);
-  color: var(--dark-text);
-  transform: translateY(-2px);
-}
-
-/* Mobile Menu Toggle */
+/* Mobile */
 .mobile-menu-toggle {
   display: none;
   background: none;
   border: none;
-  color: var(--white);
-  font-size: 1.5rem;
+  color: #ffd700;
+  font-size: 1.4rem;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: var(--border-radius-small);
-  transition: var(--transition);
 }
 
-.mobile-menu-toggle:hover {
-  background: rgba(255, 215, 0, 0.2);
-  color: var(--gold);
-}
-
-/* Mobile Styles */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 1rem;
-    position: relative;
-  }
-
   .mobile-menu-toggle {
     display: block;
   }
@@ -164,94 +73,25 @@
   .navbar-list {
     position: absolute;
     top: 100%;
-    left: 0;
     right: 0;
     flex-direction: column;
-    background: var(--gradient-saffron);
-    box-shadow: var(--shadow-heavy);
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
-    padding: 1rem;
-    gap: 0.5rem;
-    transform: translateY(-10px);
+    background: linear-gradient(135deg, #800000, #a52a2a);
+    width: 100%;
+    border-bottom: 2px solid #ffd700;
+    padding: 0.5rem 0;
     opacity: 0;
     visibility: hidden;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
 
   .navbar-list.mobile-open {
-    transform: translateY(0);
     opacity: 1;
     visibility: visible;
   }
 
-  .navbar-list li {
-    width: 100%;
-  }
-
   .navbar-link {
     width: 100%;
-    justify-content: center;
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    margin-bottom: 0.25rem;
-  }
-
-  .logo-title {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
+    text-align: center;
     padding: 0.75rem;
-  }
-
-  .logo-title {
-    font-size: 1.25rem;
-  }
-
-  .navbar-link {
-    font-size: 0.95rem;
-    padding: 0.875rem;
-  }
-}
-
-/* Loading State */
-.navbar-loading {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  height: 70px;
-}
-
-/* Accessibility Improvements */
-.navbar-link:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .navbar-link::before {
-    display: none;
-  }
-  
-  .navbar-link:hover {
-    transform: none;
-  }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .navbar {
-    border-bottom: 2px solid var(--gold);
-  }
-  
-  .navbar-link {
-    border: 1px solid transparent;
-  }
-  
-  .navbar-link:hover,
-  .navbar-link:focus {
-    border-color: var(--gold);
   }
 }

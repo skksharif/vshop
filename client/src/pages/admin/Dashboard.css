@@ -29,7 +29,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 153, 51, 0.95) 0%, rgba(255, 119, 34, 0.95) 100%);
+  background: linear-gradient(135deg, #9c0000, #9e0000);
   z-index: -1;
 }
 

@@ -1,11 +1,14 @@
+// src/pages/Product.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchWithToken } from "../../api/api";
 import { ToastContainer, toast } from "react-toastify";
 import "./Product.css";
 
 export default function Product() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
@@ -29,28 +32,48 @@ export default function Product() {
 
   const handleThumbnailClick = (index) => setMainImageIndex(index);
 
-  const handleAddToCart = () => {
-    if (product.sizes.length > 0 && !selectedSize) {
-      toast.warning(" Please select a size.");
+  // ✅ Add to Cart logic (same as Home.jsx)
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
       return;
     }
 
-    // Here you can integrate your cart logic, e.g., updating context or local storage
-    console.log({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      size: selectedSize,
-      quantity,
-    });
+    if (product.sizes.length > 0 && !selectedSize) {
+      toast.warning("Please select a size.");
+      return;
+    }
 
-    toast.success(" Product added to cart!");
+    try {
+      const res = await fetchWithToken("/user/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product.id,
+          variantId: product.variants?.[0]?.id || null,
+          quantity,
+          price: product.price,
+          size: selectedSize || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Added to cart!");
+      } else {
+        toast.error(data.message || "Failed to add to cart");
+      }
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      toast.error("Something went wrong!");
+    }
   };
 
   return (
     <div className="product-page-container">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <div className="product-content">
         {/* Images */}
         <div className="product-images">

@@ -1,9 +1,9 @@
 /* Village Angel Product Page Styles */
 .product-page-container {
   max-width: 1400px;
-  margin: 2rem auto;
-  padding: 2rem;
-  font-family: 'Inter', sans-serif;
+  margin: 1rem auto;
+  padding: 1rem;
+  font-family: "Inter", sans-serif;
   color: var(--dark-text);
   min-height: calc(100vh - 70px);
   animation: fadeIn 0.6s ease-out;
@@ -14,7 +14,7 @@
   text-align: center;
   font-size: 1.3rem;
   color: var(--light-text);
-  padding: 4rem 2rem;
+  padding: 4rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,7 +22,7 @@
 }
 
 .product-loading::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 48px;
   height: 48px;
@@ -60,13 +60,17 @@
 }
 
 .product-main-image::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 153, 51, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 153, 51, 0.05) 0%,
+    rgba(255, 215, 0, 0.05) 100%
+  );
   opacity: 0;
   transition: var(--transition);
   z-index: 1;
@@ -79,11 +83,36 @@
 
 .product-main-image img {
   width: 100%;
-  height: 100%;
+  height: 400px;
   object-fit: contain;
   transition: var(--transition);
   position: relative;
   z-index: 2;
+}
+/* Quantity Section (your code snippet) */
+.product-quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.product-quantity label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--dark-text);
+}
+
+.product-quantity input {
+  width: 60px;
+  padding: 0.4rem;
+  border: 1.5px solid var(--saffron-red);
+  border-radius: var(--border-radius-small, 6px);
+  background: var(--white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--dark-text);
+  transition: var(--transition);
 }
 
 .product-main-image:hover img {
@@ -125,7 +154,7 @@
 .product-details {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   background: var(--white);
   padding: 2.5rem;
   border-radius: var(--border-radius);
@@ -135,7 +164,7 @@
 }
 
 .product-details::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -146,7 +175,7 @@
 
 /* Product Title */
 .product-title {
-  font-family: 'Merriweather', serif;
+  font-family: "Merriweather", serif;
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   color: var(--dark-text);
@@ -188,8 +217,8 @@
 
 /* Price Section */
 .product-price {
-  font-family: 'Merriweather', serif;
-  font-size: 2rem;
+  font-family: "Merriweather", serif;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--saffron-red);
   display: flex;
@@ -197,18 +226,12 @@
   gap: 0.5rem;
 }
 
-.product-price::before {
-  content: '₹';
-  font-size: 1.5rem;
-  opacity: 0.8;
-}
-
 .price-badge {
   background: var(--gradient-gold);
   color: var(--dark-text);
   padding: 0.5rem 1rem;
   border-radius: 25px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   box-shadow: var(--shadow-light);
 }
@@ -272,13 +295,18 @@
 }
 
 .size-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 153, 51, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 153, 51, 0.2),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -351,10 +379,10 @@
 }
 
 .description-title {
-  font-family: 'Merriweather', serif;
+  font-family: "Merriweather", serif;
   font-weight: 700;
   color: var(--dark-text);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 1rem;
 }
 
@@ -378,7 +406,7 @@
 }
 
 .product-status.active::before {
-  content: '✓';
+  content: "✓";
   font-size: 1.1rem;
 }
 
@@ -389,20 +417,20 @@
 }
 
 .product-status.inactive::before {
-  content: '✗';
+  content: "✗";
   font-size: 1.1rem;
 }
 
 /* Add to Cart Button */
 .add-cart-btn {
-  padding: 1.25rem 2rem;
+  padding: 1.25rem 1rem;
   background: var(--gradient-gold);
   color: var(--dark-text);
   border: none;
   border-radius: var(--border-radius);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: var(--transition);
   position: relative;
@@ -413,13 +441,18 @@
 }
 
 .add-cart-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -446,7 +479,7 @@
 
 /* Loading State for Button */
 .add-cart-btn.loading::after {
-  content: '';
+  content: "";
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -462,7 +495,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin: 2rem 0;
+  margin: 1rem 0;
 }
 
 .feature-item {
@@ -493,8 +526,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   max-width: 1400px;
-  margin: 2rem auto;
-  padding: 2rem;
+  margin: 1rem auto;
+  padding: 1rem;
 }
 
 .product-images-skeleton {
@@ -534,7 +567,7 @@
   box-shadow: var(--shadow-light);
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .skeleton-title {
@@ -547,7 +580,7 @@
 }
 
 .skeleton-price {
-  height: 2rem;
+  height: 1rem;
   width: 40%;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
@@ -598,7 +631,7 @@
   .product-content {
     gap: 3rem;
   }
-  
+
   .product-skeleton {
     gap: 3rem;
   }
@@ -607,23 +640,23 @@
 @media (max-width: 992px) {
   .product-content {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1rem;
   }
-  
+
   .product-images {
     position: static;
   }
-  
+
   .product-skeleton {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1rem;
   }
-  
+
   .thumbnail {
     width: 70px;
     height: 70px;
   }
-  
+
   .skeleton-thumbnail {
     width: 70px;
     height: 70px;
@@ -634,27 +667,27 @@
   .product-page-container {
     padding: 1.5rem;
   }
-  
+
   .product-details {
-    padding: 2rem;
+    padding: 1rem;
   }
-  
+
   .product-title {
     font-size: 1.75rem;
   }
-  
+
   .product-price {
     font-size: 1.75rem;
   }
-  
+
   .product-features {
     grid-template-columns: 1fr;
   }
-  
+
   .sizes-list {
     justify-content: center;
   }
-  
+
   .add-cart-btn {
     font-size: 1.1rem;
     padding: 1rem 1.5rem;
@@ -665,56 +698,56 @@
   .product-page-container {
     padding: 1rem;
   }
-  
+
   .product-details {
     padding: 1.5rem;
   }
-  
+
   .product-title {
     font-size: 1.5rem;
   }
-  
+
   .product-price {
     font-size: 1.5rem;
   }
-  
+
   .product-category {
     flex-direction: column;
     text-align: center;
     gap: 0.75rem;
   }
-  
+
   .category-img {
     width: 40px;
     height: 40px;
   }
-  
+
   .thumbnail {
     width: 60px;
     height: 60px;
   }
-  
+
   .skeleton-thumbnail {
     width: 60px;
     height: 60px;
   }
-  
+
   .size-btn {
     padding: 0.625rem 1rem;
     font-size: 0.9rem;
   }
-  
+
   .quantity-input {
     width: 70px;
     padding: 0.625rem;
     font-size: 16px; /* Prevent zoom on iOS */
   }
-  
+
   .add-cart-btn {
     font-size: 1rem;
     padding: 0.875rem 1.25rem;
   }
-  
+
   .product-description {
     padding: 1.25rem;
     font-size: 1rem;
@@ -735,15 +768,15 @@
   .product-details {
     border: 2px solid var(--dark-text);
   }
-  
+
   .size-btn {
     border-width: 3px;
   }
-  
+
   .quantity-input {
     border-width: 3px;
   }
-  
+
   .thumbnail {
     border-width: 4px;
   }
@@ -754,17 +787,17 @@
   .product-page-container {
     animation: none;
   }
-  
+
   .product-main-image:hover img {
     transform: none;
   }
-  
+
   .thumbnail:hover,
   .size-btn:hover,
   .add-cart-btn:hover {
     transform: none;
   }
-  
+
   .size-btn::before,
   .add-cart-btn::before {
     display: none;
