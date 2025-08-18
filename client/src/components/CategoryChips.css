@@ -1,26 +1,240 @@
+/* Village Angel Category Chips Styles */
 .categories-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 25px;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  animation: slideIn 0.5s ease-out;
 }
 
 .chip {
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  background: #fafafa;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  border: 2px solid var(--saffron-red);
+  background: var(--white);
+  color: var(--saffron-red);
   cursor: pointer;
   font-size: 0.95rem;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  min-height: 44px; /* Touch target */
+  text-decoration: none;
+}
+
+.chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 153, 51, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.chip:hover::before {
+  left: 100%;
 }
 
 .chip:hover {
-  background: #f0f0f0;
+  background: rgba(255, 153, 51, 0.1);
+  border-color: var(--gold);
+  color: var(--dark-text);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
 }
 
 .chip.active {
-  background: #007bff;
-  color: white;
-  border-color: #007bff;
+  background: var(--gradient-saffron);
+  color: var(--white);
+  border-color: var(--saffron-red);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.chip.active:hover {
+  background: var(--gradient-gold);
+  color: var(--dark-text);
+  border-color: var(--gold);
+}
+
+/* Chip Icon (if needed) */
+.chip-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Loading State */
+.chip.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.chip.loading::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 153, 51, 0.3);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+/* Skeleton Loading */
+.categories-chips-skeleton {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+}
+
+.chip-skeleton {
+  height: 44px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 25px;
+}
+
+.chip-skeleton:nth-child(2) { width: 100px; }
+.chip-skeleton:nth-child(3) { width: 140px; }
+.chip-skeleton:nth-child(4) { width: 90px; }
+.chip-skeleton:nth-child(5) { width: 110px; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .categories-chips {
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .chip {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+    border-radius: 20px;
+  }
+  
+  .chip-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-chips {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    justify-content: center;
+  }
+  
+  .chip {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 18px;
+    flex: 0 0 auto;
+  }
+  
+  .chip-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Scrollable chips on very small screens */
+@media (max-width: 360px) {
+  .categories-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--saffron-red) transparent;
+  }
+  
+  .categories-chips::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .categories-chips::-webkit-scrollbar-track {
+    background: rgba(255, 153, 51, 0.1);
+    border-radius: 2px;
+  }
+  
+  .categories-chips::-webkit-scrollbar-thumb {
+    background: var(--saffron-red);
+    border-radius: 2px;
+  }
+  
+  .chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+/* Focus and Accessibility */
+.chip:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .chip {
+    border-width: 3px;
+  }
+  
+  .chip:hover,
+  .chip:focus {
+    border-color: var(--dark-text);
+  }
+  
+  .chip.active {
+    border-color: var(--white);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .chip::before {
+    display: none;
+  }
+  
+  .chip:hover {
+    transform: none;
+  }
+  
+  .chip.active {
+    transform: none;
+  }
+}
+
+/* Animation for new chips appearing */
+@keyframes chipAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chip.new {
+  animation: chipAppear 0.3s ease-out;
 }

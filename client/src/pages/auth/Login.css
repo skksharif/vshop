@@ -1,43 +1,89 @@
-/* Login.css */
-
+/* Village Angel Login Page Styles */
 .login-container {
   max-width: 450px;
   margin: 3rem auto;
-  padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2.5rem;
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-heavy);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+  animation: scaleIn 0.5s ease-out;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-saffron);
 }
 
 .login-container h2 {
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-  font-size: 1.8rem;
-  font-weight: 600;
+  color: var(--dark-text);
+  margin-bottom: 2rem;
+  font-family: 'Merriweather', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  position: relative;
 }
 
+.login-container h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-gold);
+  border-radius: 2px;
+}
+
+/* Form Styles */
 .login-form {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  position: relative;
 }
 
 .login-form input {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid #bdc3c7;
-  border-radius: 8px;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--border-radius);
   font-size: 1rem;
-  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  transition: var(--transition);
+  background: var(--white);
+  min-height: 50px; /* Touch target */
 }
 
 .login-form input:focus {
-  border-color: #e67e22;
-  box-shadow: 0 0 5px rgba(230, 126, 34, 0.3);
+  border-color: var(--saffron-red);
+  box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.1);
   outline: none;
 }
 
+.login-form input::placeholder {
+  color: var(--light-text);
+  transition: var(--transition);
+}
+
+.login-form input:focus::placeholder {
+  opacity: 0.7;
+  transform: translateY(-2px);
+}
+
+/* Password Field */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -46,71 +92,254 @@
 
 .password-wrapper input {
   flex: 1;
-  margin-bottom: 0;
+  padding-right: 3.5rem;
 }
 
 .show-pass-btn {
   position: absolute;
-  right: 10px;
+  right: 1rem;
   background: none;
   border: none;
-  color: #e67e22;
+  color: var(--saffron-red);
   font-weight: 500;
   cursor: pointer;
-  padding: 0.3rem 0.5rem;
-  transition: color 0.3s ease;
+  padding: 0.5rem;
+  border-radius: var(--border-radius-small);
+  transition: var(--transition);
+  font-size: 0.9rem;
 }
 
 .show-pass-btn:hover {
-  color: #d35400;
+  color: var(--gold);
+  background: rgba(255, 153, 51, 0.1);
 }
 
+/* Submit Button */
 .login-form button[type="submit"] {
-  padding: 0.75rem;
-  background-color: #e67e22;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
+  padding: 1rem;
+  background: var(--gradient-gold);
+  color: var(--dark-text);
+  font-size: 1.1rem;
+  font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  min-height: 50px; /* Touch target */
+}
+
+.login-form button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.login-form button[type="submit"]:hover::before {
+  left: 100%;
 }
 
 .login-form button[type="submit"]:hover {
-  background-color: #d35400;
-  box-shadow: 0 4px 8px rgba(230, 126, 34, 0.3);
+  background: var(--gradient-saffron);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
 }
 
+.login-form button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+.login-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Loading State */
+.login-form button[type="submit"].loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+/* Message Styles */
 .message {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
-  color: #e74c3c; /* red for errors */
   font-weight: 500;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Responsive for smaller screens */
+.message.success {
+  background: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.message.error {
+  background: rgba(244, 67, 54, 0.1);
+  color: #c62828;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* Additional Links */
+.auth-links {
+  margin-top: 2rem;
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.auth-links a {
+  color: var(--saffron-red);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.auth-links a:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+/* Responsive Design */
 @media (max-width: 500px) {
   .login-container {
     margin: 2rem 1rem;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
   }
 
   .login-container h2 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .login-form input {
-    font-size: 0.95rem;
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 0.875rem 1rem;
   }
 
   .login-form button[type="submit"] {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    padding: 0.875rem;
   }
 
   .show-pass-btn {
     font-size: 0.85rem;
-    right: 8px;
+    right: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .login-container {
+    margin: 1.5rem 0.75rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .login-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .login-form {
+    gap: 1.25rem;
+  }
+}
+
+/* Loading Skeleton */
+.login-skeleton {
+  max-width: 450px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+}
+
+.login-skeleton .skeleton-title {
+  height: 2rem;
+  width: 60%;
+  margin: 0 auto 2rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--border-radius-small);
+}
+
+.login-skeleton .skeleton-input {
+  height: 50px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--border-radius);
+}
+
+.login-skeleton .skeleton-button {
+  height: 50px;
+  width: 100%;
+  margin-top: 1rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--border-radius);
+}
+
+/* Accessibility */
+.login-form input:focus-visible,
+.login-form button:focus-visible,
+.show-pass-btn:focus-visible {
+  outline: 2px solid var(--saffron-red);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .login-container {
+    border: 2px solid var(--dark-text);
+  }
+  
+  .login-form input {
+    border-width: 3px;
+  }
+  
+  .login-form input:focus {
+    border-color: var(--dark-text);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .login-container {
+    animation: none;
+  }
+  
+  .login-form button[type="submit"]::before {
+    display: none;
+  }
+  
+  .login-form button[type="submit"]:hover {
+    transform: none;
+  }
+  
+  .login-form input:focus::placeholder {
+    transform: none;
   }
 }
