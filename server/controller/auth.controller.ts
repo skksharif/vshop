@@ -69,7 +69,7 @@ const generateTokens = (
     refresh: process.env.REFRESH_TOKEN_SECRET!,
   };
   const options = {
-    access: { expiresIn: "15m" as const },
+    access: { expiresIn: "1m" as const },
     refresh: { expiresIn: "7d" as const },
   };
 
@@ -547,7 +547,7 @@ const refreshAccessToken = async (
   next: NextFunction
 ) => {
   try {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.cookies;
 
     if (!refreshToken) {
       return next(new ErrorResponse("Refresh token is required", 400));

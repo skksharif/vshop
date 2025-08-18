@@ -1,0 +1,106 @@
+/* src/pages/UserVerification.css */
+
+.verification-container {
+  max-width: 100%;
+  margin: 10px auto;
+  overflow-y: scroll;
+}
+.search-input {
+  width: 100%;
+  max-width: 350px;
+  padding: 8px 12px;
+  margin: 10px 0 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.verification-container h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
+  font-weight: bold;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.stats strong {
+  color: #007bff;
+}
+
+h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-size: 22px;
+  color: #444;
+  border-left: 4px solid #007bff;
+  padding-left: 8px;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.user-table thead {
+  background: #007bff;
+  color: white;
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 15px;
+}
+
+.user-table tbody tr:hover {
+  background: #f1f9ff;
+}
+
+.user-table a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.user-table a:hover {
+  text-decoration: underline;
+}
+
+/* ✅ Verified Users Table */
+.user-table.verified thead {
+  background: #28a745;
+}
+
+.user-table.verified td:last-child {
+  font-weight: bold;
+  color: #28a745;
+}
+
+/* Verify button */
+.verify-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.verify-btn:hover {
+  background: #218838;
+}

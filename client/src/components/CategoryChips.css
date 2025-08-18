@@ -1,0 +1,26 @@
+.categories-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.chip {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.chip:hover {
+  background: #f0f0f0;
+}
+
+.chip.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}

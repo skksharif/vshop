@@ -1,0 +1,162 @@
+/* Product Card Container */
+.pc-card {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  width: 220px;   
+  height: 310px;    
+}
+
+/* Hover Effect */
+.pc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Image Wrapper */
+.pc-image-wrapper {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+}
+
+.pc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pc-card:hover .pc-image {
+  transform: scale(1.05);
+}
+
+/* Details Section */
+.pc-details {
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex-grow: 1;
+}
+
+.pc-name {
+  font-size: 1rem;
+  color: #222;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-price {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+.pc-desc {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pc-desc.show-full {
+  -webkit-line-clamp: unset;
+}
+
+/* Read More button */
+.pc-btn-read {
+  font-size: 0.75rem;
+  color: #007bff;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pc-btn-read:hover {
+  text-decoration: underline;
+}
+
+/* Add to Cart button */
+.pc-btn-add {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #28a745;
+  color: #fff;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pc-btn-add:hover {
+  background-color: #218838;
+  transform: scale(1.03);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .pc-card {
+    width: 200px;
+    height: 330px;
+  }
+  .pc-image-wrapper {
+    height: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pc-card {
+    width: 160px;
+    height: 300px;
+  }
+  .pc-image-wrapper {
+    height: 130px;
+  }
+  .pc-name {
+    font-size: 0.95rem;
+  }
+  .pc-price {
+    font-size: 0.85rem;
+  }
+  .pc-btn-add {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pc-card {
+    width: 140px;
+    height: 270px;
+  }
+  .pc-image-wrapper {
+    height: 110px;
+  }
+  .pc-name {
+    font-size: 0.9rem;
+  }
+  .pc-price {
+    font-size: 0.8rem;
+  }
+  .pc-btn-add {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.45rem;
+  }
+}

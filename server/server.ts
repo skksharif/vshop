@@ -6,15 +6,18 @@ dotenv.config({
 import { PrismaClient } from "@prisma/client";
 import authRouter from "./routes/auth.route";
 import adminRouter from "./routes/admin.route";
+import cartRouter from "./routes/cart.route";
 import categoryRouter from "./routes/category.route";
+import orderRoutes from "./routes/order.route";
 import swaggerUi from "swagger-ui-express";
+
 import YAML from "yaml";
 import fs from "fs";
 import path from "path";
 import cors from "cors";
 import dotenv from 'dotenv';
 dotenv.config();
-
+import cookieParser from "cookie-parser";
 
 const app: Express = express();
 const PORT = process.env.PORT || 8080;
@@ -35,6 +38,7 @@ async function main() {
       credentials: true, // allow cookies
     })
   );
+  app.use(cookieParser());
 
   app.use(json());
 
@@ -45,6 +49,10 @@ async function main() {
   app.use("/api/v1/admin", adminRouter);
   app.use("/api/v1/user", authRouter);
   app.use("/api/v1/category", categoryRouter);
+  
+  //Add this
+  app.use("/api/v1/user",cartRouter);
+  app.use("/api/v1",orderRoutes);
 
   app.listen(PORT, () => {
     console.log(`⚙️ Server is running at port: ${PORT}`);

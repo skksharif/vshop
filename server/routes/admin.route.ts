@@ -9,6 +9,10 @@ import {
   verifyUser,
   setCreditLimit,
   updateCreditLimit,
+  getVerifiedUsers,
+  getAllProducts,
+  getApprovedOrders,
+  getShippedOrders,
 } from "../controller/admin.controller";
 import {
   authenticateToken,
@@ -24,9 +28,13 @@ adminRouter.patch("/verifyUser", verifyUser);
 adminRouter.post("/create-category", creatCategory);
 adminRouter.post("/create-product", creatProducts);
 adminRouter.get("/orders/pending", getPendingOrders);
-adminRouter.post("/orders/approve", approveOrder); 
-adminRouter.post("/orders/shipped", markOrderShipped); 
+adminRouter.post("/orders/approve", approveOrder);
+adminRouter.post("/orders/shipped", markOrderShipped);
 adminRouter.post("/set-credit-limit", setCreditLimit);
 adminRouter.post("/update-credit-limit", updateCreditLimit);
+adminRouter.get("/verifiedUsers", getVerifiedUsers);
+adminRouter.get("/getAllProducts", getAllProducts);
+adminRouter.get("/orders/approved",getApprovedOrders);
+adminRouter.get("/orders/shipped",getShippedOrders);
 
 export default adminRouter;

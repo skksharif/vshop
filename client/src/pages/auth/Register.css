@@ -1,0 +1,82 @@
+/* Register.css */
+
+.register-container {
+  max-width: 450px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-container h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-form input {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.register-form input:focus {
+  border-color: #e67e22;
+  box-shadow: 0 0 5px rgba(230, 126, 34, 0.3);
+  outline: none;
+}
+
+.register-form button {
+  padding: 0.75rem;
+  background-color: #e67e22;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-form button:hover {
+  background-color: #d35400;
+  box-shadow: 0 4px 8px rgba(230, 126, 34, 0.3);
+}
+
+.message {
+  margin-top: 1rem;
+  text-align: center;
+  color: #27ae60; /* green for success */
+  font-weight: 500;
+}
+
+@media (max-width: 500px) {
+  .register-container {
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+
+  .register-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .register-form input {
+    font-size: 0.95rem;
+  }
+
+  .register-form button {
+    font-size: 0.95rem;
+  }
+}

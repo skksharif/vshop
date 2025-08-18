@@ -22,7 +22,44 @@ const getUnverifiedUsers: RequestHandler = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
+const getVerifiedUsers: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const verifiedUsers = await prisma.user.findMany({
+      where: {
+        kycVerified: true,
+      },
+    });
 
+    res.status(200).json({
+      success: true,
+      message: "Verified Users",
+      verifiedUsers: verifiedUsers,
+    });
+  } catch (error) {
+    return next(new ErrorResponse(error.message, 500));
+  }
+};
+const getAllProducts: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const allProducts = await prisma.product.findMany({});
+
+    res.status(200).json({
+      success: true,
+      message: "Products retrived",
+      products: allProducts,
+    });
+  } catch (error) {
+    return next(new ErrorResponse(error.message, 500));
+  }
+};
 const verifyUser: RequestHandler = async (
   req: Request,
   res: Response,
@@ -60,7 +97,6 @@ const verifyUser: RequestHandler = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
 const creatCategory: RequestHandler = async (
   req: Request,
   res: Response,
@@ -68,10 +104,12 @@ const creatCategory: RequestHandler = async (
 ) => {
   try {
     const { categoryName, imageUrl } = req.body;
-    console.log(categoryName,imageUrl)
+    console.log(categoryName, imageUrl);
 
     if (!categoryName || !imageUrl) {
-      return next(new ErrorResponse("Category Name and image is required", 404));
+      return next(
+        new ErrorResponse("Category Name and image is required", 404)
+      );
     }
 
     const categoryExist = await prisma.category.findUnique({
@@ -88,7 +126,7 @@ const creatCategory: RequestHandler = async (
       const newCategory = await prisma.category.create({
         data: {
           name: categoryName,
-          image: imageUrl
+          image: imageUrl,
         },
       });
 
@@ -109,14 +147,14 @@ const creatCategory: RequestHandler = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
 const creatProducts: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { productName, description, price, images, color, sizes, isActive } = req.body;
+    const { productName, description, price, images, color, sizes, isActive } =
+      req.body;
 
     const categoryId = req.query.categoryId as string;
 
@@ -132,10 +170,7 @@ const creatProducts: RequestHandler = async (
     // Validate sizes is an array
     if (!Array.isArray(sizes) || sizes.length === 0) {
       return next(
-        new ErrorResponse(
-          "Sizes must be a non-empty array of strings",
-          400
-        )
+        new ErrorResponse("Sizes must be a non-empty array of strings", 400)
       );
     }
 
@@ -167,7 +202,7 @@ const creatProducts: RequestHandler = async (
       });
 
       return res.status(200).json({
-        succes: true,
+        success: true,
         message: "Product Created",
         product: product,
       });
@@ -178,7 +213,6 @@ const creatProducts: RequestHandler = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
 // Get all orders with status 'pending'
 const getPendingOrders = async (
   req: Request,
@@ -189,7 +223,7 @@ const getPendingOrders = async (
     const pendingOrders = await prisma.order.findMany({
       where: { status: "pending" },
       include: { user: true, items: true },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
     res.status(201).json({
       success: true,
@@ -200,7 +234,47 @@ const getPendingOrders = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
+const getApprovedOrders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const approvedOrders = await prisma.order.findMany({
+      where: { status: "approved" },
+      include: { user: true, items: true },
+      orderBy: { createdAt: "desc" },
+    });
+    console.log(approvedOrders)
+    res.status(201).json({
+      success: true,
+      message: "Pending orders retrieved successfully",
+      approvedOrders,
+    });
+  } catch (error) {
+    return next(new ErrorResponse(error.message, 500));
+  }
+};
+const getShippedOrders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const shippedOrders = await prisma.order.findMany({
+      where: { status: "shipped" },
+      include: { user: true, items: true },
+      orderBy: { createdAt: "desc" },
+    });
+    res.status(201).json({
+      success: true,
+      message: "Pending orders retrieved successfully",
+      shippedOrders,
+    });
+  } catch (error) {
+    return next(new ErrorResponse(error.message, 500));
+  }
+};
 // Approve one or more orders by ID (change status)
 const approveOrder = async (
   req: Request,
@@ -209,7 +283,7 @@ const approveOrder = async (
 ) => {
   try {
     // Accept single ID or array of IDs in body
-    const { orderId, newStatus = "paid" } = req.body;
+    const { orderId, newStatus = "approved" } = req.body;
 
     if (!orderId) {
       return res.status(400).json({ error: "No order IDs provided" });
@@ -217,7 +291,7 @@ const approveOrder = async (
 
     const updated = await prisma.order.updateMany({
       where: { id: orderId },
-      data: { status: newStatus }
+      data: { status: newStatus },
     });
 
     res.status(201).json({
@@ -229,8 +303,6 @@ const approveOrder = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
-
 const markOrderShipped = async (
   req: Request,
   res: Response,
@@ -244,12 +316,14 @@ const markOrderShipped = async (
 
     // Only mark as shipped if currently "paid"
     const order = await prisma.order.updateMany({
-      where: { id: orderId, status: "paid" },
-      data: { status: "shipped" }
+      where: { id: orderId, status: "approved" },
+      data: { status: "shipped" },
     });
 
     if (order.count === 0) {
-      return res.status(404).json({ error: "No matching 'paid' order found with this ID" });
+      return res
+        .status(404)
+        .json({ error: "No matching 'Approved' order found with this ID" });
     }
 
     res.status(201).json({
@@ -261,8 +335,6 @@ const markOrderShipped = async (
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
-
 // Set credit limit for a user
 const setCreditLimit = async (
   req: Request,
@@ -274,12 +346,14 @@ const setCreditLimit = async (
 
     // Simple validation
     if (!userId || typeof creditBal !== "number") {
-      return res.status(400).json({ error: "userId and creditBal (number) are required." });
+      return res
+        .status(400)
+        .json({ error: "userId and creditBal (number) are required." });
     }
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { creditBal }
+      data: { creditBal },
     });
 
     res.status(201).json({
@@ -288,16 +362,14 @@ const setCreditLimit = async (
       user: {
         id: updatedUser.id,
         fullName: updatedUser.fullName,
-        creditBal: updatedUser.creditBal
-      }
+        creditBal: updatedUser.creditBal,
+      },
     });
   } catch (error) {
     // Handle not found, etc.
     return next(new ErrorResponse(error.message, 500));
   }
 };
-
-
 // Update user's credit
 const updateCreditLimit = async (
   req: Request,
@@ -311,7 +383,7 @@ const updateCreditLimit = async (
     }
     const user = await prisma.user.update({
       where: { id: userId },
-      data: { creditBal: newCredit }
+      data: { creditBal: newCredit },
     });
 
     res.status(201).json({
@@ -324,4 +396,18 @@ const updateCreditLimit = async (
   }
 };
 
-export { getUnverifiedUsers, verifyUser, creatCategory, creatProducts, getPendingOrders, approveOrder, setCreditLimit, updateCreditLimit, markOrderShipped };
+export {
+  getUnverifiedUsers,
+  verifyUser,
+  creatCategory,
+  creatProducts,
+  getPendingOrders,
+  approveOrder,
+  setCreditLimit,
+  updateCreditLimit,
+  markOrderShipped,
+  getAllProducts,
+  getVerifiedUsers,
+  getShippedOrders,
+  getApprovedOrders
+};
