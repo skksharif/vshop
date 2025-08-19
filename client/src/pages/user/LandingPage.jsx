@@ -12,20 +12,14 @@ export default function LandingPage() {
           Authentic Boutique Dresses – Where Elegance Meets Tradition
         </p>
         <div className="hero-buttons">
-          <a href="#products" className="btn-gold" >
+          <a href="#products" className="btn-gold">
             Shop Now
           </a>
-          <button className="btn-outline" onClick={() => navigate("/cart")}>
-            Goto Cart
-          </button>
         </div>
       </div>
 
       <div className="hero-image">
-        <img
-          src="/women.png"
-          alt="Village Angel Boutique"
-        />
+        <img src="/women.png" alt="Village Angel Boutique" />
       </div>
     </section>
   );
