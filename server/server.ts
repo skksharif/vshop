@@ -34,7 +34,7 @@ async function main() {
   // Middleware
   app.use(
     cors({
-      origin: "http://localhost:5173", // frontend URL, NOT "*"
+      origin: "https://vshop-beta.vercel.app/", // frontend URL, NOT "*"
       credentials: true, // allow cookies
     })
   );
