@@ -4,25 +4,47 @@ import "./CreditManagement.css";
 
 export default function CreditManagement() {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]); // filtered list
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [creditValue, setCreditValue] = useState("");
   const [message, setMessage] = useState("");
+  const [searchEmail, setSearchEmail] = useState(""); // search input
 
   // Fetch verified users
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await fetchWithToken("/admin/verifiedusers", { method: "GET" });
-      const data = await res.json();
-      console.log(data)
-      if (data.success) {
-        setUsers(data.verifiedUsers || []);
-      }
-    } catch (err) {
-      console.error("Error fetching users:", err);
-    } finally {
-      setLoading(false);
+// Fetch verified users
+const fetchUsers = async () => {
+  try {
+    setLoading(true);
+    const res = await fetchWithToken("/admin/verifiedusers", { method: "GET" });
+    const data = await res.json();
+
+    if (data.success) {
+      // ✅ Filter only role: USER
+      const userOnly = (data.verifiedUsers || []).filter(
+        (user) => user.role === "USER"
+      );
+      setUsers(userOnly);
+      setFilteredUsers(userOnly);
+    }
+  } catch (err) {
+    console.error("Error fetching users:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  // Filter users by email
+  const handleSearch = (value) => {
+    setSearchEmail(value);
+    if (value.trim() === "") {
+      setFilteredUsers(users);
+    } else {
+      const lower = value.toLowerCase();
+      setFilteredUsers(
+        users.filter((user) => user.email.toLowerCase().includes(lower))
+      );
     }
   };
 
@@ -81,7 +103,17 @@ export default function CreditManagement() {
         <div className="credit-grid">
           {/* User List */}
           <div className="user-list">
-            <h3 className="section-title">Verified Users ({users.length})</h3>
+            <h3 className="section-title">Verified Users ({filteredUsers.length})</h3>
+
+            {/* Search by Email */}
+            <input
+              type="text"
+              placeholder="Search by email..."
+              value={searchEmail}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="input-field search-input"
+            />
+
             <table className="user-table">
               <thead>
                 <tr>
@@ -92,7 +124,7 @@ export default function CreditManagement() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <tr key={user.id}>
                     <td>{user.fullName}</td>
                     <td>{user.email}</td>

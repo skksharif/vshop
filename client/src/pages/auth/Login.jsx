@@ -44,6 +44,7 @@ export default function Login() {
       });
 
       const data = await response.json();
+      console.log(data)
 
       if (response.ok) {
         const { accessToken, refreshToken, user } = data;
@@ -54,18 +55,18 @@ export default function Login() {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("role", user.role);
 
-        toast.success("✅ Login successful!");
+        toast.success("Login successful!");
 
         // Redirect based on role
         setTimeout(() => {
           navigate(user.role === "ADMIN" ? "/admin" : "/");
         }, 800);
       } else {
-        toast.error(data.message || "❌ Login failed!");
+        toast.error(data.message || "Login failed!");
       }
     } catch (err) {
       console.error(err);
-      toast.error("⚠️ Something went wrong!");
+      toast.error("User not found");
     } finally {
       setLoading(false);
     }

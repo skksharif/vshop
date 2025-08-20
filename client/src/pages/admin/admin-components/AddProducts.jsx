@@ -17,23 +17,23 @@ export default function AddProducts() {
     isActive: true,
   });
 
-  const [images, setImages] = useState([]);
-  const [imageInput, setImageInput] = useState("");
-
+  const [images, setImages] = useState([]); // store File objects
   const [sizes, setSizes] = useState([]);
   const [sizeInput, setSizeInput] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
+  // ✅ Replace with your Cloudinary values
+  const CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dralfzsvo/image/upload";
+  const CLOUDINARY_UPLOAD_PRESET = "kyc_card";
+
   // Fetch categories
   useEffect(() => {
     const loadCategories = async () => {
       try {
         setLoadingCats(true);
-        const res = await fetchWithToken("/category/getCatergory", {
-          method: "GET",
-        });
+        const res = await fetchWithToken("/category/getCatergory", { method: "GET" });
         if (!res.ok) throw new Error("Failed to fetch categories");
         const data = await res.json();
         if (data.success && Array.isArray(data.categories)) {
@@ -56,9 +56,7 @@ export default function AddProducts() {
   useEffect(() => {
     const loadProductsCount = async () => {
       try {
-        const res = await fetchWithToken("/admin/getAllProducts", {
-          method: "GET",
-        });
+        const res = await fetchWithToken("/admin/getAllProducts", { method: "GET" });
         if (!res.ok) throw new Error("Failed to fetch products");
         const data = await res.json();
         if (data.success && Array.isArray(data.products)) {
@@ -79,16 +77,19 @@ export default function AddProducts() {
     }));
   };
 
-  const addImage = () => {
-    if (!imageInput.trim()) return;
-    setImages((prev) => [...prev, imageInput.trim()]);
-    setImageInput("");
+  // Image upload
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length) {
+      setImages((prev) => [...prev, ...files]);
+    }
   };
 
   const removeImage = (idx) => {
     setImages((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  // Sizes
   const addSize = () => {
     const s = sizeInput.trim().toUpperCase();
     if (!s) return;
@@ -100,6 +101,19 @@ export default function AddProducts() {
     setSizes((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  // ✅ Upload images to Cloudinary
+  const uploadToCloudinary = async (file) => {
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: "POST", body: data });
+    if (!res.ok) throw new Error("Cloudinary upload failed");
+    const json = await res.json();
+    return json.secure_url;
+  };
+
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -111,27 +125,29 @@ export default function AddProducts() {
     if (Number.isNaN(priceNum) || priceNum < 0)
       return setMessage("⚠️ Please enter a valid non-negative price.");
     if (images.length === 0)
-      return setMessage("⚠️ Please add at least one product image URL.");
+      return setMessage("⚠️ Please upload at least one product image.");
     if (sizes.length === 0)
       return setMessage("⚠️ Please add at least one size.");
-
-    const payload = {
-      productName: form.productName.trim(),
-      description: form.description.trim(),
-      price: priceNum,
-      images,
-      color: form.color.trim(),
-      sizes,
-      isActive: form.isActive,
-    };
 
     try {
       setSubmitting(true);
 
+      // ✅ Upload all images first
+      const uploadedUrls = await Promise.all(images.map(uploadToCloudinary));
+
+      // ✅ Send JSON to backend
+      const payload = {
+        productName: form.productName.trim(),
+        description: form.description.trim(),
+        price: priceNum,
+        color: form.color.trim(),
+        isActive: form.isActive,
+        sizes,
+        images: uploadedUrls,
+      };
+
       const res = await fetchWithToken(
-        `/admin/create-product?categoryId=${encodeURIComponent(
-          selectedCategory
-        )}`,
+        `/admin/create-product?categoryId=${encodeURIComponent(selectedCategory)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -140,20 +156,13 @@ export default function AddProducts() {
       );
 
       const data = await res.json();
-      console.log(data.success)
 
       if (data.success) {
         setMessage("✅ Product created successfully!");
-        setForm({
-          productName: "",
-          description: "",
-          price: "",
-          color: "",
-          isActive: true,
-        });
+        setForm({ productName: "", description: "", price: "", color: "", isActive: true });
         setImages([]);
         setSizes([]);
-        setProductsCount((prev) => prev + 1); // ✅ increase count
+        setProductsCount((prev) => prev + 1);
       } else {
         setMessage(`❌ ${data.message || "Failed to create product"}`);
       }
@@ -250,34 +259,13 @@ export default function AddProducts() {
           {/* Images */}
           <div className="form-row">
             <label className="form-label">Images</label>
-            <div className="input-add">
-              <input
-                className="form-input"
-                value={imageInput}
-                onChange={(e) => setImageInput(e.target.value)}
-                placeholder="Paste image URL"
-                onKeyDown={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), addImage())
-                }
-              />
-              <button
-                className="btn"
-                type="button"
-                onClick={addImage}
-              >
-                Add
-              </button>
-            </div>
+            <input type="file" multiple accept="image/*" onChange={handleImageUpload} />
             {images.length > 0 && (
               <div className="chips-grid">
-                {images.map((url, i) => (
+                {images.map((file, i) => (
                   <div key={i} className="chip-item">
-                    <img src={url} alt={`img-${i}`} className="chip-img" />
-                    <button
-                      type="button"
-                      className="chip-remove"
-                      onClick={() => removeImage(i)}
-                    >
+                    <img src={URL.createObjectURL(file)} alt={`img-${i}`} className="chip-img" />
+                    <button type="button" className="chip-remove" onClick={() => removeImage(i)}>
                       ×
                     </button>
                   </div>
@@ -295,15 +283,9 @@ export default function AddProducts() {
                 value={sizeInput}
                 onChange={(e) => setSizeInput(e.target.value)}
                 placeholder="S, M, L"
-                onKeyDown={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), addSize())
-                }
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSize())}
               />
-              <button
-                className="btn"
-                type="button"
-                onClick={addSize}
-              >
+              <button className="btn" type="button" onClick={addSize}>
                 Add
               </button>
             </div>
@@ -312,11 +294,7 @@ export default function AddProducts() {
                 {sizes.map((s, i) => (
                   <span key={s} className="pill">
                     {s}
-                    <button
-                      type="button"
-                      className="pill-remove"
-                      onClick={() => removeSize(i)}
-                    >
+                    <button type="button" className="pill-remove" onClick={() => removeSize(i)}>
                       ×
                     </button>
                   </span>
@@ -329,12 +307,7 @@ export default function AddProducts() {
         {/* Active toggle */}
         <div className="form-row checkbox-row">
           <label className="checkbox">
-            <input
-              type="checkbox"
-              name="isActive"
-              checked={form.isActive}
-              onChange={updateField}
-            />
+            <input type="checkbox" name="isActive" checked={form.isActive} onChange={updateField} />
             <span>Active</span>
           </label>
         </div>

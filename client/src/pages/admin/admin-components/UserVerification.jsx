@@ -7,6 +7,7 @@ export default function UserVerification() {
   const [unverifiedUsers, setUnverifiedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [verifyingUserId, setVerifyingUserId] = useState(null); // track which user is being verified
 
   // Fetch Unverified Users
   const fetchUnverifiedUsers = async () => {
@@ -25,6 +26,7 @@ export default function UserVerification() {
 
   // Verify User
   const verifyUser = async (userId) => {
+    setVerifyingUserId(userId); // set current verifying user
     try {
       const res = await fetchWithToken(`/admin/verifyUser?userId=${userId}`, {
         method: "PATCH",
@@ -33,9 +35,11 @@ export default function UserVerification() {
       if (!res.ok) throw new Error("Failed to verify user");
 
       // Refresh unverified list
-      fetchUnverifiedUsers();
+      await fetchUnverifiedUsers();
     } catch (err) {
       console.error("Error verifying user:", err);
+    } finally {
+      setVerifyingUserId(null); // reset
     }
   };
 
@@ -97,7 +101,7 @@ export default function UserVerification() {
                       <td>{user.phone}</td>
                       <td>
                         <a
-                          href={user.aadhaarPanUrl}
+                          href={user.kycCard}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -107,9 +111,14 @@ export default function UserVerification() {
                       <td>
                         <button
                           className="verify-btn"
+                          disabled={verifyingUserId === user.id}
                           onClick={() => verifyUser(user.id)}
                         >
-                          Verify
+                          {verifyingUserId === user.id ? (
+                            <span className="spinner"></span>
+                          ) : (
+                            "Verify"
+                          )}
                         </button>
                       </td>
                     </tr>
