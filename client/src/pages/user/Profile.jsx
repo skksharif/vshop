@@ -82,7 +82,7 @@ export default function Profile() {
               <p><strong>Phone:</strong> {user.phone}</p>
               <p>
                 <strong>Credit Balance:</strong>{" "}
-                <span className="credit-badge">₹{user.creditBal}</span>
+                <span className="credit-badge">{user.creditBal}</span>
               </p>
               <p>
                 <strong>KYC Verified:</strong>{" "}
@@ -94,7 +94,7 @@ export default function Profile() {
                   {user.kycVerified ? "Yes" : "No"}
                 </span>
               </p>
-              <p><strong>KYC Card:</strong> {user.kycCard || "Not Provided"}</p>
+              <p><strong>KYC Card:</strong> <a href={user.kycCard}>KYC Card</a></p>
               {user.aadhaarPanUrl && (
                 <p>
                   <strong>KYC Document:</strong>{" "}
